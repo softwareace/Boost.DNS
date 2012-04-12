@@ -94,7 +94,7 @@ protected:
 public:
   /// Default constructor
   request_base_t()
-    : rr_type(type_none), rr_class(class_none)
+    : rr_domain(), rr_type(type_none), rr_class(class_none)
   {}
 
   /*!
@@ -114,7 +114,7 @@ public:
   \param c Resource class to create object for
   */
   request_base_t(const type_t t, const class_t c=class_in)
-    : rr_type(t), rr_class(c)
+    : rr_domain(), rr_type(t), rr_class(c)
   {
   }
 
@@ -136,6 +136,7 @@ public:
   \param offset_map DNS label compression map for label/offset values
   */
   request_base_t(dns_buffer_t& buffer, rfc1035_414_t& offset_map)
+  : rr_domain(), rr_type(0), rr_class(0)
   {
     decode(buffer, offset_map);
   }
@@ -381,6 +382,7 @@ public:
   \param offset_map
   */
   resource_base_t(dns_buffer_t& buffer, rfc1035_414_t& offset_map)
+  : request_base_t(), rr_ttl(0), rr_length(0)
   {
     decode(buffer, offset_map);
   }
@@ -487,7 +489,7 @@ protected:
 
 public:
   /// Default contructor
-  unknown_resource() : resource_base_t() {;}
+  unknown_resource() : resource_base_t(), _data() {;}
 
   /*!
   Copy Constructor
@@ -495,9 +497,8 @@ public:
   \param o unknown resource to copy from
   */
   unknown_resource(const unknown_resource& o)
-  : resource_base_t(o)
+  : resource_base_t(o), _data( new uint8_t[length()] )
   {
-    _data = shared_ptr<uint8_t>( new uint8_t[length()] );
     memcpy( _data.get(), o._data.get(), length() );
   }
 
@@ -506,7 +507,7 @@ public:
 
   \param o resource_base_t to copy from
   */
-  unknown_resource(const resource_base_t& o) : resource_base_t(o) { ; }
+  unknown_resource(const resource_base_t& o) : resource_base_t(o), _data() { ; }
 
   /// Virtual Destructor
   virtual ~unknown_resource()
@@ -545,7 +546,7 @@ protected:
   \param buffer Buffer to decode the request into
   \param offset_map DNS label compression map for label/offset values
   */
-  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& offset_map)
+  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& )
   {
     _data = shared_ptr<uint8_t>( new uint8_t[length()] );
     for( size_t i = 0; i < length(); ++i )
@@ -665,7 +666,7 @@ protected:
   \param buffer Buffer to decode the request into
   \param offset_map DNS label compression map for label/offset values
   */
-  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& offset_map)
+  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& )
   {
     buffer.get(rr_address);
   }
@@ -683,14 +684,14 @@ protected:
 
 public:
   /// Default contructor
-  ns_resource() : resource_base_t(type_ns) {;}
+  ns_resource() : resource_base_t(type_ns), rr_nsdname() {;}
 
   /*!
   Constructs a ns_resource from a string
 
   \param s Host name for the NS record
   */
-  ns_resource(const string& s) : resource_base_t(s, type_ns) {;}
+  ns_resource(const string& s) : resource_base_t(s, type_ns), rr_nsdname(s) {;}
 
   /// Virtual Destructor
   virtual ~ns_resource()
@@ -703,7 +704,7 @@ public:
   \param s Nameserver to assign to the ns_resource.
   \return Nameserver
   */
-	const string& nameserver(const string& s)
+  const string& nameserver(const string& s)
   {
     return nameserver(s.c_str());
   }
@@ -755,7 +756,7 @@ protected:
   \param o resource_base_t to copy from
   */
   ns_resource(const resource_base_t& o)
-  : resource_base_t(o)
+  : resource_base_t(o), rr_nsdname()
   {
   }
 
@@ -799,14 +800,14 @@ protected:
 
 public:
   /// Default contructor
-  cname_resource() : resource_base_t(type_cname) {;}
+  cname_resource() : resource_base_t(type_cname), rr_cname() {;}
 
   /*!
   Constructs a cname_resource
 
   \param s Host name for the CNAME record
   */
-  cname_resource(const string& s) : resource_base_t(s, type_cname) {;}
+  cname_resource(const string& s) : resource_base_t(s, type_cname), rr_cname(s) {;}
 
   /// Virtual Destructor
   virtual ~cname_resource()
@@ -819,7 +820,7 @@ public:
   \param s Canonical name to assign to the cname_resource.
   \return Canonical Name
   */
-	const string& canonicalname(const string& s)
+  const string& canonicalname(const string& s)
   {
     return canonicalname(s.c_str());
   }
@@ -870,7 +871,7 @@ protected:
 
   \param o resource_base_t to copy from
   */
-  cname_resource(const resource_base_t& o) : resource_base_t(o) { ; }
+  cname_resource(const resource_base_t& o) : resource_base_t(o), rr_cname() { ; }
 
   /*!
   Encodes the cname resource into a memory buffer
@@ -924,14 +925,14 @@ protected:
 
 public:
   /// Default contructor
-  soa_resource() : resource_base_t(type_soa), rr_serial(0), rr_refresh(0), rr_retry(0), rr_expire(0), rr_minttl(0) {;}
+  soa_resource() : resource_base_t(type_soa), rr_mname(), rr_rname(), rr_serial(0), rr_refresh(0), rr_retry(0), rr_expire(0), rr_minttl(0) {;}
 
   /*!
   Constructs a soa_resource
 
   \param s Host name for the SOA record
   */
-  soa_resource(const string& s) : resource_base_t(s, type_soa), rr_serial(0), rr_refresh(0), rr_retry(0), rr_expire(0), rr_minttl(0) {;}
+  soa_resource(const string& s) : resource_base_t(s, type_soa), rr_mname(), rr_rname(), rr_serial(0), rr_refresh(0), rr_retry(0), rr_expire(0), rr_minttl(0) {;}
 
   /// Virtual Destructor
   virtual ~soa_resource()
@@ -944,7 +945,7 @@ public:
   \param s Master Name to assign to the soa_resource.
   \return Master Name
   */
-	const string& master_name(const string& s)
+  const string& master_name(const string& s)
   {
     return master_name(s.c_str());
   }
@@ -1132,15 +1133,15 @@ protected:
   \param o soa_resource to copy from
   */
   soa_resource(const soa_resource& o)
-  : resource_base_t(o)
-  {
-    rr_mname = o.rr_mname;
-    rr_rname = o.rr_rname;
-    rr_serial = o.rr_serial;
-    rr_refresh = o.rr_refresh;
-    rr_retry = o.rr_retry;
-    rr_expire = o.rr_expire;
-    rr_minttl = o.rr_minttl;
+  : resource_base_t(o),
+    rr_mname( o.rr_mname ),
+    rr_rname( o.rr_rname ),
+    rr_serial( o.rr_serial ),
+    rr_refresh( o.rr_refresh ),
+    rr_retry( o.rr_retry ),
+    rr_expire( o.rr_expire ),
+    rr_minttl( o.rr_minttl )
+    {
   }
 
   /*!
@@ -1148,7 +1149,7 @@ protected:
 
   \param o resource_base_t to copy from
   */
-  soa_resource(const resource_base_t& o) : resource_base_t(o), rr_serial(0), rr_refresh(0), rr_retry(0), rr_expire(0), rr_minttl(0) {;}
+  soa_resource(const resource_base_t& o) : resource_base_t(o), rr_mname(), rr_rname(), rr_serial(0), rr_refresh(0), rr_retry(0), rr_expire(0), rr_minttl(0) {;}
 
   /*!
   Encodes the soa resource into a memory buffer
@@ -1206,25 +1207,25 @@ protected:
 
 public:
   /// Default contructor
-  ptr_resource() : resource_base_t(type_ptr) {;}
+  ptr_resource() : resource_base_t(type_ptr), rr_ptrdname() {;}
 
   /// Constructs a ptr_resource
   /*
   \param s Host name for the PTR record
   */
-  ptr_resource(const string& s) : resource_base_t(s, type_ptr) {;}
+  ptr_resource(const string& s) : resource_base_t(s, type_ptr), rr_ptrdname(s) {;}
 
   /// Virtual Destructor
   virtual ~ptr_resource()
   {
   }
 
-	/// Pointer set function
+  /// Pointer set function
   /*
   \param t Pointer to assign to the ptr_resource.
   \return Pointer
   */
-	const string& pointer(const string& s)
+  const string& pointer(const string& s)
   {
     return pointer(s.c_str());
   }
@@ -1263,7 +1264,7 @@ protected:
   /*
   \param o resource_base_t to copy from
   */
-  ptr_resource(const resource_base_t& o) : resource_base_t(o) { ; }
+  ptr_resource(const resource_base_t& o) : resource_base_t(o), rr_ptrdname() { ; }
 
   /// Encodes the ptr resource into a memory buffer
   /*
@@ -1303,25 +1304,26 @@ protected:
 
 public:
   /// Default contructor
-  hinfo_resource() : resource_base_t(type_hinfo) {;}
+  hinfo_resource() : resource_base_t(type_hinfo), rr_cpu(), rr_os() {;}
+
 
   /// Constructs a hinfo_resource
   /*
   \param s Host name for the PTR record
   */
-  hinfo_resource(const string& s) : resource_base_t(s, type_hinfo) {;}
+  hinfo_resource(const string& s) : resource_base_t(s, type_hinfo), rr_cpu(), rr_os() {;}
 
   /// Virtual Destructor
   virtual ~hinfo_resource()
   {
   }
 
-	/// CPU description set function
+  /// CPU description set function
   /*
   \param t CPU description to assign to the hinfo_resource.
   \return CPU description
   */
-	const string& cpu(const string& s)
+  const string& cpu(const string& s)
   {
     return cpu(s.c_str());
   }
@@ -1343,7 +1345,7 @@ public:
   \param t OS description to assign to the hinfo_resource.
   \return OS description
   */
-	const string& os(const string& s)
+  const string& os(const string& s)
   {
     return os(s.c_str());
   }
@@ -1382,7 +1384,7 @@ protected:
   /*
   \param o resource_base_t to copy from
   */
-  hinfo_resource(const resource_base_t& o) : resource_base_t(o) { ; }
+  hinfo_resource(const resource_base_t& o) : resource_base_t(o), rr_cpu(), rr_os() { ; }
 
 
   /// Encodes the hinfo resource into a memory buffer
@@ -1410,7 +1412,7 @@ protected:
   /*
   \param buffer Buffer to decode the request into
   */
-  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& offset_map)
+  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& )
   {
     uint16_t len(0);
 
@@ -1435,25 +1437,25 @@ protected:
 
 public:
   /// Default contructor
-  mx_resource() : resource_base_t(type_mx), rr_preference(0) {}
+  mx_resource() : resource_base_t(type_mx), rr_preference(0), rr_exchange() {}
 
   /// Constructs a mx_resource
   /*
   \param s Host name for the MX record
   */
-  mx_resource(const string& s) : resource_base_t(s, type_mx), rr_preference(0) {}
+  mx_resource(const string& s) : resource_base_t(s, type_mx), rr_preference(0), rr_exchange() {}
 
   /// Virtual Destructor
   virtual ~mx_resource()
   {
   }
 
-	/// Mail exchange(server) set function
+  /// Mail exchange(server) set function
   /*
   \param t Mail exchange(server) to assign to the mx_resource.
   \return Mail exchange(server)
   */
-	const string& exchange(const string& s)
+  const string& exchange(const string& s)
   {
     return exchange(s.c_str());
 
@@ -1505,7 +1507,7 @@ protected:
   /*
   \param o resource_base_t to copy from
   */
-  mx_resource(const resource_base_t& o) : resource_base_t(o), rr_preference(0) {}
+  mx_resource(const resource_base_t& o) : resource_base_t(o), rr_preference(0), rr_exchange() {}
 
 
   /// Encodes the mx resource into a memory buffer
@@ -1550,13 +1552,13 @@ protected:
 
 public:
   /// Default contructor
-  txt_resource() : resource_base_t(type_txt) {;}
+  txt_resource() : resource_base_t(type_txt), rr_text() {;}
 
   /// Constructs a txt_resource
   /*
   \param s Host name for the TXT record
   */
-  txt_resource(const string& s) : resource_base_t(s, type_txt) {;}
+  txt_resource(const string& s) : resource_base_t(s, type_txt), rr_text(s) {;}
 
   /// Virtual Destructor
   virtual ~txt_resource()
@@ -1607,7 +1609,7 @@ protected:
   /*
   \param o resource_base_t to copy from
   */
-  txt_resource(const resource_base_t& o) : resource_base_t(o) { ; }
+  txt_resource(const resource_base_t& o) : resource_base_t(o), rr_text() { ; }
 
   /// Encodes the txt resource into a memory buffer
   /*
@@ -1632,7 +1634,7 @@ protected:
   /*
   \param buffer Buffer to decode the request into
   */
-  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& offset_map)
+  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& )
   {
     uint8_t  len;
     buffer.get(len);
@@ -1652,13 +1654,13 @@ protected:
 
 public:
   /// Default contructor
-  a6_resource() : resource_base_t(type_a6) {;}
+  a6_resource() : resource_base_t(type_a6), rr_address() {;}
 
   /// Constructs a a6_resource
   /*
   \param s Host name for the A record
   */
-  a6_resource(const string& s) : resource_base_t(s, type_a6) {;}
+  a6_resource(const string& s) : resource_base_t(s, type_a6), rr_address() {;}
 
   /// Virtual Destructor
   virtual ~a6_resource()
@@ -1670,7 +1672,7 @@ public:
   \param t Address to assign to the a6_resource.
   \return Address
   */
-	const ip::address_v6& address(const ip::address_v6& addr)
+  const ip::address_v6& address(const ip::address_v6& addr)
   {
     rr_address = addr;
     return rr_address;
@@ -1710,7 +1712,7 @@ protected:
   /*
   \param o resource_base_t to copy from
   */
-  a6_resource(const resource_base_t& o) : resource_base_t(o) { ; }
+  a6_resource(const resource_base_t& o) : resource_base_t(o), rr_address() { ; }
 
   /// Encodes the a resource into a memory buffer
   /*
@@ -1736,7 +1738,7 @@ protected:
   /*
   \param buffer Buffer to decode the request into
   */
-  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& offset_map)
+  virtual void decode(dns_buffer_t& buffer, rfc1035_414_t& )
   {
     buffer.get(rr_address);
   }
@@ -1755,13 +1757,13 @@ protected:
 
 public:
   /// Default contructor
-  srv_resource() : resource_base_t(type_srv)  { ; }
+  srv_resource() : resource_base_t(type_srv),rr_priority(0), rr_weight(0), rr_port(0), rr_target()  { ; }
 
   /// Constructs a srv_resource
   /*
   \param s Host name for the TXT record
   */
-  srv_resource(const string& s) : resource_base_t(s, type_srv) {;}
+  srv_resource(const string& s) : resource_base_t(s, type_srv), rr_priority(0), rr_weight(0), rr_port(0), rr_target(s) {;}
 
   /// Virtual Destructor
   virtual ~srv_resource()
@@ -1846,7 +1848,7 @@ protected:
   /*
   \param o resource_base_t to copy from
   */
-  srv_resource(const resource_base_t& o) : resource_base_t(o) { ; }
+  srv_resource(const resource_base_t& o) : resource_base_t(o), rr_priority(0), rr_weight(0), rr_port(0), rr_target() { ; }
 
 
   /// Encodes the srv resource into a memory buffer
@@ -1990,7 +1992,7 @@ private:
 
 public:
   /// Default constructor
-	message()
+  message() : question_section(), answer_section(), authority_section(), additional_section()
   {
     memset(&header, 0x00, sizeof(header));
   }
@@ -2001,6 +2003,7 @@ public:
   \param q question to ask
   */
   message( const dns::question& q)
+  : question_section(), answer_section(), authority_section(), additional_section()
   {
     memset(&header, 0x00, sizeof(header));
     question_section.push_back( q );
@@ -2017,6 +2020,7 @@ public:
   \param t Resource type to query
   */
   message(const string & d, const type_t t)
+  : question_section(), answer_section(), authority_section(), additional_section()
   {
     memset(&header, 0x00, sizeof(header));
     question_section.push_back( dns::question(d, t) );
@@ -2032,6 +2036,7 @@ public:
   \param p message to copy from
   */
   message(const message& p)
+  : question_section(), answer_section(), authority_section(), additional_section()
   {
     operator=(p);
   }
@@ -2041,7 +2046,7 @@ public:
 
   \param p message to assign from
   */
-  const message& operator=(const message& p)
+  message& operator=(const message& p)
   {
 	  memcpy(&header, &p.header, sizeof(header));
 
@@ -2097,8 +2102,8 @@ public:
   action_t action(const action_t e)
   {
     (e == query) ?
-      ((opaque_header*)header)->bit_fields &= ~0x8000 :
-      ((opaque_header*)header)->bit_fields |= 0x8000;
+      ((opaque_header*)header)->bit_fields &= static_cast<uint16_t>(~0x8000) :
+      ((opaque_header*)header)->bit_fields |= static_cast<uint16_t>(0x8000);
 
     return (action_t)(((opaque_header*)header)->bit_fields & 0x8000);
   }
@@ -2125,13 +2130,13 @@ public:
     switch( oc )
     {
     case squery:
-      ((opaque_header*)header)->bit_fields &= ~0x3000;
+      ((opaque_header*)header)->bit_fields &= static_cast<uint16_t>(~0x3000);
       return squery;
     case iquery:
-      ((opaque_header*)header)->bit_fields |= 0x1000;
+      ((opaque_header*)header)->bit_fields |= static_cast<uint16_t>(0x1000);
       return iquery;
     case status:
-      ((opaque_header*)header)->bit_fields |= 0x2000;
+      ((opaque_header*)header)->bit_fields |= static_cast<uint16_t>(0x2000);
       return status;
     case no_opcode:
       break;
@@ -2169,8 +2174,8 @@ public:
   */
   void  authority(const bool authority)
   {
-    (authority) ? ((opaque_header*)header)->bit_fields |= 0x400 :
-                  ((opaque_header*)header)->bit_fields &= ~0x400;
+    (authority) ? ((opaque_header*)header)->bit_fields |= static_cast<uint16_t>(0x0400) :
+                  ((opaque_header*)header)->bit_fields &= static_cast<uint16_t>(~0x0400);
   }
 
   /*!
@@ -2193,8 +2198,8 @@ public:
   */
   void  truncated(const bool truncated)
   {
-    (truncated) ? ((opaque_header*)header)->bit_fields |= 0x200 :
-                  ((opaque_header*)header)->bit_fields &= ~0x200;
+    (truncated) ? ((opaque_header*)header)->bit_fields |= static_cast<uint16_t>(0x0200) :
+                  ((opaque_header*)header)->bit_fields &= static_cast<uint16_t>(~0x0200) ;
   }
 
   /*!
@@ -2215,8 +2220,8 @@ public:
   */
   void  recursive(const bool recursive)
   {
-    (recursive) ? ((opaque_header*)header)->bit_fields |= 0x100 :
-                  ((opaque_header*)header)->bit_fields &= ~0x100;
+    (recursive) ? ((opaque_header*)header)->bit_fields |= static_cast<uint16_t>(0x0100) :
+                  ((opaque_header*)header)->bit_fields &= static_cast<uint16_t>(~0x0100) ;
   }
 
   /*!
@@ -2237,8 +2242,8 @@ public:
   */
   void  recursion_avail(const bool recursion_avail)
   {
-    (recursion_avail) ? ((opaque_header*)header)->bit_fields |= 0x80 :
-                        ((opaque_header*)header)->bit_fields &= ~0x80;
+    (recursion_avail) ? ((opaque_header*)header)->bit_fields |= static_cast<uint16_t>(0x0080) :
+                        ((opaque_header*)header)->bit_fields &= static_cast<uint16_t>(~0x0080);
   }
 
   /*!
@@ -2262,11 +2267,11 @@ public:
     switch( r )
     {
     case noerror:
-	    ((opaque_header*)header)->bit_fields &= ~0x07;
+	    ((opaque_header*)header)->bit_fields &= static_cast<uint16_t>(~0x0007);
 	    break;
 
     default:
-	    ((opaque_header*)header)->bit_fields |= r;
+	    ((opaque_header*)header)->bit_fields |= static_cast<uint16_t>(r);
 	    break;
     }
 

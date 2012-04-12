@@ -48,7 +48,7 @@ namespace boost {
 
     public:
       /// Default constructor
-      rfc1035_414_t()
+      rfc1035_414_t() : _offsets()
       {
       }
 
@@ -59,7 +59,7 @@ namespace boost {
       }
 
       /// Assignment operator
-      const rfc1035_414_t& operator=(const rfc1035_414_t& rfc)
+      rfc1035_414_t& operator=(const rfc1035_414_t& rfc)
       {
         _offsets = rfc._offsets;
         return *this;
@@ -166,7 +166,7 @@ namespace boost {
             uint8_t msb;
             buffer.get(msb);
             uint8_t lsb = len ^ 0xC0;
-            uint16_t offset = lsb << 8 | msb;
+            uint16_t offset = static_cast<uint16_t>(lsb << 8 | msb);
 
             // bad dog! trying to reference the header
             if( offset < 0x0C )

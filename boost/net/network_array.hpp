@@ -318,7 +318,7 @@ public:
       position(p);
     }
 
-    *((uint32_t *)&array<uint8_t,N>::elems[nap]) = htonl(d.to_ulong());
+    *((uint32_t *)&array<uint8_t,N>::elems[nap]) = static_cast<uint32_t>(htonl(d.to_ulong()));
 
     if( incpos )
     {

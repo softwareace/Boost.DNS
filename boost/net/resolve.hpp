@@ -13,7 +13,7 @@
 
 #include <boost/asio/detail/push_options.hpp>
 #include <boost/bind.hpp>
-#include <boost/thread/thread.hpp> 
+#include <boost/thread/thread.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
@@ -42,7 +42,7 @@ private:
   class reference_counter
   {
   public:
-      reference_counter() : count(0) { }
+      reference_counter() : mutex(), count(0) { }
       int inc()
       {
           boost::mutex::scoped_lock scoped_lock(mutex);
@@ -72,17 +72,17 @@ private:
 
   /// The maximum length async_dns_request should try to get a response.
   uint32_t            death_timeout;
-    
+
   /// List of servers to request resolution from
   vector<ip::udp::endpoint> endpointList;
-  
+
   /// Response message to pass back when a request is resolved
   dns::message        responseMessage;
 
-  /// Outbound DNS request buffer 
+  /// Outbound DNS request buffer
   dns_buffer_t  reqBuffer;
 
-  /// Number of servers left before 
+  /// Number of servers left before
   reference_counter   requestCount;
 
   /// General mutex for locking buffers
@@ -91,11 +91,16 @@ private:
 public:
   /// Constructor for the resolve class
   resolve()
-  : ioservice(), 
-    socket(ioservice, ip::udp::endpoint(ip::udp::v4(), 0)), 
-    retry_timer(ioservice), 
-    death_timer(ioservice), 
-    death_timeout(30)
+  : ioservice(),
+    socket(ioservice, ip::udp::endpoint(ip::udp::v4(), 0)),
+    retry_timer(ioservice),
+    death_timer(ioservice),
+    death_timeout(30),
+    endpointList(),
+    responseMessage(),
+    reqBuffer(),
+    requestCount(),
+    bufferMutex()
   {
   }
 
@@ -124,7 +129,7 @@ public:
 
     // make our message id unique
     qmessage.id( 0xaffe );
-      
+
     qmessage.encode( reqBuffer );
 
     // in the event nothing get's resolved, answer with the original question
@@ -144,7 +149,7 @@ public:
       shared_dns_buffer_t recvBuffer( new dns_buffer_t );
       socket.async_receive_from(
           boost::asio::buffer( *recvBuffer.get() ), *iter,
-          boost::bind(&resolve::handle_recv, this, 
+          boost::bind(&resolve::handle_recv, this,
             recvBuffer,
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
@@ -204,7 +209,7 @@ private:
       if( responseMessage.result() != dns::message::no_result )
       {
         boost::mutex::scoped_lock lock(bufferMutex);
-          
+
         // clamp the recvBuffer with the number of bytes transferred
         inBuffer.get()->length(bytes_transferred);
 

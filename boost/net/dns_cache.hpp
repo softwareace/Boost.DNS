@@ -32,18 +32,18 @@ namespace boost {
       /*!
       Implementation for a simple DNS cache.
       This cache uses two methods to remove a "stale" record.
-      
+
         #1 - Expiration date
-        
+
         #2 - Hit count
-        
+
       */
       class dns_cache_t
       {
       private:
-      
+
         /*!
-        
+
         */
         struct dns_hasher
         {
@@ -62,14 +62,14 @@ namespace boost {
           */
           static std::size_t query(const request_base_t& dnr)
           {
-            return dns_hasher::query(dnr.domain(), dnr.rtype(), dnr.rclass());
+            return query(dnr.domain(), dnr.rtype(), dnr.rclass());
           }
-          
+
           /*!
           */
           static std::size_t query(const shared_resource_base_t& dnr)
           {
-            return dns_hasher::query(dnr->domain(), dnr->rtype(), dnr->rclass());
+            return query(dnr->domain(), dnr->rtype(), dnr->rclass());
           }
 
           /*!
@@ -105,14 +105,14 @@ namespace boost {
             case type_a6:
             case type_srv:
               break;
-              
+
             case type_none:
             case type_hinfo:
             case type_txt:
             case type_axfr:
             case type_all:
               break;
-            
+
             }
 
             return hashCode;
@@ -130,7 +130,7 @@ namespace boost {
           time_period _expirationTime;
           ptime       _timeRetrieved;
           bool        _perm;
-          
+
           shared_resource_base_t record;
 
           /*!
@@ -144,7 +144,7 @@ namespace boost {
           {
             _rHash = dns_hasher::record(rr);
             _qHash = dns_hasher::query(rr);
-            
+
             boost::hash<string> hString;
             _dHash = hString(record.get()->domain());
           }
@@ -161,11 +161,11 @@ namespace boost {
           {
             if( _perm )
               return false;
-              
+
             ptime nowTime = second_clock::local_time();
             return (!_expirationTime.contains(nowTime));
           }
-          
+
           uint32_t hits() const
           {
             if( _perm )
@@ -174,7 +174,7 @@ namespace boost {
             return _hits;
           }
 
-        };      
+        };
         /*!
         */
         typedef shared_ptr<rr_cache>  shared_rr_cache;
@@ -191,24 +191,24 @@ namespace boost {
           shared_rr_cache,
           boost::multi_index::indexed_by<
             boost::multi_index::hashed_non_unique<
-              boost::multi_index::tag<by_d>, 
+              boost::multi_index::tag<by_d>,
               boost::multi_index::member<rr_cache, std::size_t, &rr_cache::_dHash>
             >,
             boost::multi_index::hashed_unique<
-              boost::multi_index::tag<by_r>, 
+              boost::multi_index::tag<by_r>,
               boost::multi_index::member<rr_cache, std::size_t, &rr_cache::_rHash>
             >,
             boost::multi_index::hashed_non_unique<
-              boost::multi_index::tag<by_q>, 
+              boost::multi_index::tag<by_q>,
               boost::multi_index::member<rr_cache, std::size_t, &rr_cache::_qHash>
             >,
-            boost::multi_index::ordered_non_unique< 
-              boost::multi_index::tag<by_hits>, 
-              boost::multi_index::const_mem_fun<rr_cache, uint32_t, &rr_cache::hits> 
+            boost::multi_index::ordered_non_unique<
+              boost::multi_index::tag<by_hits>,
+              boost::multi_index::const_mem_fun<rr_cache, uint32_t, &rr_cache::hits>
             >,
-            boost::multi_index::ordered_non_unique< 
-              boost::multi_index::tag<by_ttl>, 
-              boost::multi_index::const_mem_fun<rr_cache, bool, &rr_cache::expired> 
+            boost::multi_index::ordered_non_unique<
+              boost::multi_index::tag<by_ttl>,
+              boost::multi_index::const_mem_fun<rr_cache, bool, &rr_cache::expired>
             >
           >
         > rr_container_t;
@@ -239,7 +239,7 @@ namespace boost {
         bool exists(const question& q)
         {
           boost::mutex::scoped_lock scopeLock(_mutex);
-          
+
           size_t qHash = dns_hasher::query(q);
 
           q_iter_t rrIter = _cache.get<by_q>().find(qHash);
@@ -248,7 +248,7 @@ namespace boost {
 
           return true;
         }
-        
+
         /*!
         */
         bool exists(const std::string& domain, const type_t rType)
@@ -263,21 +263,21 @@ namespace boost {
         {
           boost::mutex::scoped_lock scopeLock(_mutex);
 
-          rr_list_t retList; 
-        
-          std::pair<q_iter_t,q_iter_t> rrIter = _cache.get<by_q>().equal_range(dns_hasher::query(q));    
+          rr_list_t retList;
+
+          std::pair<q_iter_t,q_iter_t> rrIter = _cache.get<by_q>().equal_range(dns_hasher::query(q));
           while( rrIter.first != rrIter.second )
           {
             (*rrIter.first)->_hits++;
             (*rrIter.first)->_timeRetrieved = second_clock::local_time();
-           
+
             retList.push_back( (*rrIter.first)->record );
             rrIter.first++;
           }
-          
+
           return retList;
         }
-        
+
         /*!
         */
         rr_list_t get(const std::string& domain, const type_t rType)
@@ -285,7 +285,7 @@ namespace boost {
           question q(domain,rType);
           return get(q);
         }
-        
+
         /*!
         */
         void add(const shared_resource_base_t& rr, const bool perm = false)
@@ -305,7 +305,7 @@ namespace boost {
           size_t  cacheSize = _cache.size();
           if( cacheSize < (_max_elements - reserve_count) )
             return ;
-          
+
           expiredCleanup(reserve_count, q);
           cacheSize = _cache.size();
           if( reserve_count < (_max_elements - _cache.size()) )
@@ -315,13 +315,13 @@ namespace boost {
           while( reserve_count > (_max_elements - _cache.size()) )
             lowestHitCleanup(reserve_count, q, lowMark++);
         }
-          
+
         /*!
         */
         void show_cache()
         {
           d_iter_t  iter;
-          
+
           for( iter = _cache.get<by_d>().begin(); iter != _cache.get<by_d>().end(); ++iter )
           {
             cout << "+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+" << endl
@@ -331,7 +331,7 @@ namespace boost {
             debug::dump_record(cout, (*iter)->record.get() );
           }
         }
-        
+
       private:
         /*!
         */
@@ -340,7 +340,7 @@ namespace boost {
           boost::mutex::scoped_lock scopeLock(_mutex);
           int count(0);
           std::pair<ttl_iter_t,ttl_iter_t> range_iter;
-          for( 
+          for(
             range_iter = _cache.get<by_ttl>().equal_range(true);
             range_iter.first != range_iter.second;
             ++range_iter.first, ++count )
@@ -352,19 +352,19 @@ namespace boost {
                 break;
             }
           }
-          
+
           return count;
         }
-          
+
         /*!
         */
         uint32_t lowestHitCleanup(size_t reserve_count, request_base_t& q, uint32_t lowMark = 0)
         {
           boost::mutex::scoped_lock scopeLock(_mutex);
           int count(0);
-          
+
           std::pair<hits_iter_t,hits_iter_t> range_iter;
-          for( 
+          for(
             range_iter = _cache.get<by_hits>().equal_range(lowMark);
             range_iter.first != range_iter.second;
             ++range_iter.first, ++count )
@@ -376,7 +376,7 @@ namespace boost {
                 break;
             }
           }
-          
+
           return count;
         }
       };
