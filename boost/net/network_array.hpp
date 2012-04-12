@@ -39,7 +39,7 @@ namespace boost {
   Derived from boost::array.
  */
 template<std::size_t N>
-class network_array : public array<uint8_t, N>
+class network_array
 {
 private:
   /// Position in memory buffer for get/put
@@ -48,14 +48,21 @@ private:
   /// Total size of memory buffer, not necessarily the N size of the buffer
   size_t  nal; // acronym: network array length
 
+  array<uint8_t, N>     _data;
+
 public:
   /// Constructs an empty network_array
   /*
 
   */
-  network_array() : nap(0), nal(0)
+  network_array() : nap(0), nal(0), _data()
   {
-//    array<uint8_t,N>::assign((uint8_t)0x00);
+    _data.assign((uint8_t)0x00);
+  }
+
+  virtual ~network_array()
+  {
+
   }
 
   /// Get & Set the position in the array
@@ -93,11 +100,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    d = (char)array<uint8_t,N>::elems[nap];
+    d = (char)_data.elems[nap];
     if( incpos ) nap += sizeof(d);
 
     return sizeof(d);
@@ -115,11 +122,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    array<uint8_t,N>::elems[nap] = (uint8_t)d;
+    _data.elems[nap] = (uint8_t)d;
     if( incpos )
     {
       nap += sizeof(d);
@@ -142,11 +149,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    d = array<uint8_t,N>::elems[nap];
+    d = _data.elems[nap];
 
     if( incpos ) nap += sizeof(d);
     return sizeof(d);
@@ -164,11 +171,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    array<uint8_t,N>::elems[nap] = d;
+    _data.elems[nap] = d;
 
     if( incpos )
     {
@@ -192,11 +199,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    d = ntohs( *((uint16_t *)&array<uint8_t,N>::elems[nap]) );
+    d = ntohs( *((uint16_t *)&_data.elems[nap]) );
 
     if( incpos ) nap += sizeof(d);
     return sizeof(d);
@@ -214,11 +221,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    *((uint16_t *)&array<uint8_t,N>::elems[nap]) = htons(d);
+    *((uint16_t *)&_data.elems[nap]) = htons(d);
 
     if( incpos )
     {
@@ -242,11 +249,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    d = ntohl( *((uint32_t *)&array<uint8_t,N>::elems[nap]) );
+    d = ntohl( *((uint32_t *)&_data.elems[nap]) );
 
     if( incpos ) nap += sizeof(d);
     return sizeof(d);
@@ -264,11 +271,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    *((uint32_t *)&array<uint8_t,N>::elems[nap]) = htonl(d);
+    *((uint32_t *)&_data.elems[nap]) = htonl(d);
 
     if( incpos )
     {
@@ -292,11 +299,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    d = ip::address_v4( ntohl( *((uint32_t *)&array<uint8_t,N>::elems[nap]) ) );
+    d = ip::address_v4( ntohl( *((uint32_t *)&_data.elems[nap]) ) );
 
     if( incpos ) nap += sizeof(uint32_t);
     return sizeof(d);
@@ -314,11 +321,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    *((uint32_t *)&array<uint8_t,N>::elems[nap]) = static_cast<uint32_t>(htonl(d.to_ulong()));
+    *((uint32_t *)&_data.elems[nap]) = static_cast<uint32_t>(htonl(d.to_ulong()));
 
     if( incpos )
     {
@@ -342,12 +349,12 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
     ip::address_v6::bytes_type  bytes;
-    memcpy( &bytes.elems[0], &array<uint8_t,N>::elems[nap], 16);
+    memcpy( &bytes.elems[0], &_data.elems[nap], 16);
     d = ip::address_v6(bytes);
     if( incpos )
     {
@@ -369,11 +376,11 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
-    memcpy( &array<uint8_t,N>::elems[nap], &d.to_bytes().elems[0], 16);
+    memcpy( &_data.elems[nap], &d.to_bytes().elems[0], 16);
 
     if( incpos )
     {
@@ -398,12 +405,12 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
     scoped_array<char> cPtr( new char[len + 1] );
-    strncpy( cPtr.get(), (char*)&array<uint8_t,N>::elems[nap], len);
+    strncpy( cPtr.get(), (char*)&_data.elems[nap], len);
     cPtr.get()[len] = 0x00;
     d = cPtr.get();
 
@@ -430,13 +437,13 @@ public:
   {
     if( p != N+1 )
     {
-      array<uint8_t,N>::rangecheck(p);
+      _data.rangecheck(p);
       position(p);
     }
 
     // make sure we can memcpy!
-    array<uint8_t,N>::rangecheck(nap + len);
-    memcpy( &array<uint8_t,N>::elems[nap], d.c_str(), len );
+    _data.rangecheck(nap + len);
+    memcpy( &_data.elems[nap], d.c_str(), len );
 
     if( incpos )
     {
@@ -447,6 +454,17 @@ public:
 
     return len;
   }
+
+  /// Returns the underline boost::array to provide a compatible object.
+  /**
+   Returns the underline boost::array to provide a compatible object.
+   @return A boost::array compatible object
+   */
+  array<uint8_t, N>& get_array()
+  {
+    return _data;
+  }
+
 };
 
 typedef network_array<576>        dns_buffer_t;

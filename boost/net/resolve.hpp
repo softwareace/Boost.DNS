@@ -148,7 +148,7 @@ public:
       // setup the receive buffer
       shared_dns_buffer_t recvBuffer( new dns_buffer_t );
       socket.async_receive_from(
-          boost::asio::buffer( *recvBuffer.get() ), *iter,
+          boost::asio::buffer( recvBuffer.get()->get_array() ), *iter,
           boost::bind(&resolve::handle_recv, this,
             recvBuffer,
             boost::asio::placeholders::error,
@@ -198,7 +198,7 @@ private:
 
     // send out the packets for request
     for( vector<ip::udp::endpoint>::iterator iter = endpointList.begin(); iter != endpointList.end(); ++iter )
-      socket.send_to(boost::asio::buffer(reqBuffer), *iter);
+      socket.send_to(boost::asio::buffer(reqBuffer.get_array()), *iter);
   }
 
   void handle_recv(shared_dns_buffer_t inBuffer, const boost::system::error_code& ec, std::size_t bytes_transferred)
