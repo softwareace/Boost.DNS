@@ -1,0 +1,39 @@
+#
+# Copyright (c) 2003-2007 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+
+import os ;
+local BOOST_ROOT = [ os.environ BOOST_ROOT ] ;
+
+if [ os.name ] = SOLARIS
+{
+  lib socket ;
+  lib nsl ;
+}
+else if [ os.name ] = NT
+{
+  lib ws2_32 ;
+  lib mswsock ;
+}
+
+project : requirements
+  <include>../../../
+  <include>$(BOOST_ROOT)
+  <define>BOOST_ALL_NO_LIB=1
+  <library>$(BOOST_ROOT)/libs/date_time/build//boost_date_time
+  <library>$(BOOST_ROOT)/libs/system/build//boost_system 
+  <library>$(BOOST_ROOT)/libs/thread/build//boost_thread
+  <threading>multi
+  <link>static
+  <os>SOLARIS:<library>socket
+  <os>SOLARIS:<library>nsl
+  <os>NT,<toolset>gcc:<library>ws2_32
+  <os>NT,<toolset>gcc:<library>mswsock
+  ;
+
+exe dns_simple : dns_simple.cpp dns_util.cpp ;
+exe test_resolver : test_resolver.cc dns_util.cpp ;
+# exe auth_server : auth_server.cc dns_util.cpp ;

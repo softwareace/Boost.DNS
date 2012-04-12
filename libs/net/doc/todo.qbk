@@ -1,0 +1,19 @@
+[/
+ / Copyright (c) 2007 Andreas Haberstroh (andreas at ibusy dot com)
+ /
+ / Distributed under the Boost Software License, Version 1.0. (See accompanying
+ / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+ /]
+
+[section:todo Next Release]
+
+[h1 Coming to a Compiler near YOU!]
+
+The current release supports all of the known record types available at this 
+time. As future DNS records become published, we'll be adding those types to
+this library.
+
+Fortunately, resource records that are of an unknown type use the unknown resource
+record and simply give you the raw data.
+
+[endsect]

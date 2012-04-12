@@ -1,0 +1,35 @@
+[/
+ / Copyright (c) 2008 Andreas Haberstroh (andreas at ibusy dot com)
+ /
+ / Distributed under the Boost Software License, Version 1.0. (See accompanying
+ / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+ /]
+
+[section:acknowledgements History and Acknowledgements]
+
+The main portion of this code, that was released late last year was used for
+a simple DNS resolver to get MX records for hosts. I incorporated the resolver
+for the ASIO framework, and since that time have made incremental improvements.
+
+The major inprovement in this release is the DNS resolver service, allowing for
+asynchronous DNS resolution!
+
+[h1 Reference Material]
+
+[@ftp://ftp.rfc-editor.org/in-notes/rfc1034.txt RFC 1034]
+
+* Domain names - concepts and facilities
+
+[@ftp://ftp.rfc-editor.org/in-notes/rfc1035.txt RFC 1035]
+
+* Domain names - implementation and specification
+
+[@ftp://ftp.rfc-editor.org/in-notes/rfc3597.txt RFC 3597]
+
+* Handling of Unknown DNS Resource Record (RR) Types
+
+[@ftp://ftp.rfc-editor.org/in-notes/rfc2782.txt RFC 2782]
+
+* A DNS RR for specifying the location of services (DNS SRV)
+
+[endsect]

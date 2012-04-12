@@ -1,0 +1,39 @@
+[/
+ / Copyright (c) 2008 Andreas Haberstroh (andreas at ibusy dot com)
+ /
+ / Distributed under the Boost Software License, Version 1.0. (See accompanying
+ / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+ /]
+
+[section:linking Linking with Boost.DNS]
+
+[h3 Building]
+
+Boost.DNS is a header only library. To use it, simply copy the ['boost] and 
+['libs] directories to your boost distribution tree. Then, include the following
+header file in your project:
+
+``#include <boost/net/dns_resolver.hpp>``
+
+Consult the Boost.Build documentation for more details on building with [*bjam] 
+projects.
+
+[h3 Supported Platforms]
+
+The following platforms and compilers have been tested:
+
+* Win32 using Visual C++ 7.1 and 8.0, Visual C++ Express Edition 9.0
+* FreeBSD i386, GCC 3.4
+* Linux i386, GCC 4.1
+* Linux PPC, GCC 4.1
+
+[h3 Dependencies]
+
+The following Boost libraries are required in order to compile with Boost.DNS.
+
+* [@http://www.boost.org/doc/html/date_time.html Boost Date Time Library]
+* [@http://www.boost.org/doc/html/function.html Boost Function Library]
+* [@http://www.boost.org/libs/bind/bind.html Boost Bind Library]
+* [@http://www.boost.org/libs/smart_ptr/smart_ptr.htm Boost Smart Pointers Library]
+
+[endsect]
