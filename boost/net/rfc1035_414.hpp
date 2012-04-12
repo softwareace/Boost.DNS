@@ -43,9 +43,9 @@ namespace boost {
       requirements.
       */
       typedef std::map<string,size_t>   domain_offset_map_t;
-      
+
       domain_offset_map_t _offsets;
-        
+
     public:
       /// Default constructor
       rfc1035_414_t()
@@ -66,7 +66,7 @@ namespace boost {
       }
 
       /*!
-      Breaks apart a domain name into it's label or compressed offset values and 
+      Breaks apart a domain name into it's label or compressed offset values and
       writes it to the buffer
 
       \param domain Domain string to break apart into labels
@@ -74,7 +74,7 @@ namespace boost {
 
       \returns Number of bytes written
       */
-      const size_t write_label(const string& domain, dns_buffer_t & buffer)
+      size_t write_label(const string& domain, dns_buffer_t & buffer)
       {
         // no length? no service
         if( !domain.length() )
@@ -156,7 +156,7 @@ namespace boost {
         while( true )
         {
           uint8_t   len;
-          
+
           size_t thisPos = buffer.position();
           buffer.get(len);
 
@@ -167,18 +167,18 @@ namespace boost {
             buffer.get(msb);
             uint8_t lsb = len ^ 0xC0;
             uint16_t offset = lsb << 8 | msb;
-            
+
             // bad dog! trying to reference the header
             if( offset < 0x0C )
               throw std::out_of_range("Reference inside header"); // maybe we should throw a message?
 
             // bad dog! trying to reference ourselves!
             if( offset == thisPos )
-              throw std::out_of_range("Self Reference"); 
+              throw std::out_of_range("Self Reference");
 
             // bad dog! trying to reference out-of-bounds!
             if( offset > buffer.length() )
-              throw std::out_of_range("Out of Bounds"); 
+              throw std::out_of_range("Out of Bounds");
 
             // recurse the reference !
             size_t savedpos = buffer.position();

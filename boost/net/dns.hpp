@@ -185,7 +185,7 @@ public:
   \param t resource type to assign to the request_base_t.
   \return Current type
   */
-  const type_t  rtype(const type_t t)
+  type_t  rtype(const type_t t)
   {
     rr_type = t;
     return (type_t)rr_type;
@@ -196,7 +196,7 @@ public:
 
   \return Current type
   */
-  const type_t  rtype() const
+  type_t  rtype() const
   {
     return (type_t)rr_type;
   }
@@ -207,7 +207,7 @@ public:
   \param c resource class to assign to the request_base_t.
   \return current class
   */
-  const class_t  rclass(const class_t c)
+  class_t  rclass(const class_t c)
   {
     rr_class = c;
     return (class_t)rr_class;
@@ -218,7 +218,7 @@ public:
 
   \return current class
   */
-  const class_t  rclass() const
+  class_t  rclass() const
   {
     return (class_t)rr_class;
   }
@@ -403,7 +403,7 @@ public:
   \param t Time to Live to assign to the resource_base_t.
   \return TTL value
   */
-  const uint32_t  ttl(const uint32_t t)
+  uint32_t  ttl(const uint32_t t)
   {
     rr_ttl = t;
     return rr_ttl;
@@ -414,7 +414,7 @@ public:
 
   \return TTL value
   */
-  const uint32_t ttl() const
+  uint32_t ttl() const
   {
     return rr_ttl;
   }
@@ -425,7 +425,7 @@ public:
   \param t Payload length to assign to the resource_base_t.
   \return payload length
   */
-  const uint16_t  length(const uint16_t t)
+  uint16_t  length(const uint16_t t)
   {
     rr_length = t;
     return rr_length;
@@ -436,7 +436,7 @@ public:
 
   \return payload length
   */
-  const uint16_t  length() const
+  uint16_t  length() const
   {
     return rr_length;
   }
@@ -584,7 +584,7 @@ public:
   \param addr Address to assign to the a_resource.
   \return Address
   */
-	const ip::address_v4& address(const ip::address_v4& addr)
+  ip::address_v4& address(const ip::address_v4& addr)
   {
     rr_address = addr;
     return rr_address;
@@ -1010,7 +1010,7 @@ public:
   \param d Serial number to assign to the soa_resouce.
   \return Serial number
   */
-  const uint32_t serial_number(const uint32_t d)
+  uint32_t serial_number(const uint32_t d)
   {
     rr_serial = d;
     return rr_serial;
@@ -1021,7 +1021,7 @@ public:
 
   \return Serial number
   */
-  const uint32_t serial_number() const
+  uint32_t serial_number() const
   {
     return rr_serial;
   }
@@ -1032,7 +1032,7 @@ public:
   \param d Refresh time to assign to the soa_resouce.
   \return Refresh time
   */
-  const uint32_t refresh(const uint32_t d)
+  uint32_t refresh(const uint32_t d)
   {
     rr_refresh = d;
     return rr_refresh;
@@ -1043,7 +1043,7 @@ public:
 
   \return Refresh time
   */
-  const uint32_t refresh() const
+  uint32_t refresh() const
   {
     return rr_refresh;
   }
@@ -1054,7 +1054,7 @@ public:
   \param d Retry time to assign to the soa_resouce.
   \return Retry time
   */
-  const uint32_t retry(const uint32_t d)
+  uint32_t retry(const uint32_t d)
   {
     rr_retry = d;
     return rr_retry;
@@ -1065,7 +1065,7 @@ public:
 
   \return Retry time
   */
-  const uint32_t retry() const
+  uint32_t retry() const
   {
     return rr_retry;
   }
@@ -1076,7 +1076,7 @@ public:
   \param d Exipiration time to assign to the soa_resouce.
   \return Exipiration time
   */
-  const uint32_t expire(const uint32_t d)
+  uint32_t expire(const uint32_t d)
   {
     rr_expire = d;
     return rr_expire;
@@ -1087,7 +1087,7 @@ public:
 
   \return Exipiration time
   */
-  const uint32_t expire() const
+  uint32_t expire() const
   {
     return rr_expire;
   }
@@ -1098,7 +1098,7 @@ public:
   \param d Minimum TTL to assign to the soa_resouce.
   \return Minimum TTL
   */
-  const uint32_t minttl(const uint32_t d)
+  uint32_t minttl(const uint32_t d)
   {
     rr_minttl = d;
     return rr_minttl;
@@ -1109,7 +1109,7 @@ public:
 
   \return Minimum TTL
   */
-  const uint32_t minttl() const
+  uint32_t minttl() const
   {
     return rr_minttl;
   }
@@ -1773,7 +1773,7 @@ public:
   \param t Priority value to assign to the srv_resource. If left blank, will return the current priority value only.
   \return Priority value
   */
-  const uint16_t priority(const uint16_t d = 0xffff)
+  uint16_t priority(const uint16_t d = 0xffff)
   {
     if( d != 0xffff ) rr_priority = d;
     return rr_priority;
@@ -1784,7 +1784,7 @@ public:
   \param t Weight value to assign to the srv_resource. If left blank, will return the current weight value only.
   \return Weight value
   */
-  const uint16_t weight(const uint16_t d = 0xffff)
+  uint16_t weight(const uint16_t d = 0xffff)
   {
     if( d != 0xffff ) rr_weight = d;
     return rr_weight;
@@ -1795,7 +1795,7 @@ public:
   \param t Port value to assign to the srv_resource. If left blank, will return the current port value only.
   \return Port value
   */
-  const uint16_t port(const uint16_t d = 0xffff)
+  uint16_t port(const uint16_t d = 0xffff)
   {
     if( d != 0xffff ) rr_port = d;
     return rr_port;
@@ -1806,7 +1806,7 @@ public:
   \param t Target host string to assign to the srv_resource.
   \return Target host string
   */
-	const string& targethost(const string& s)
+  const string& targethost(const string& s)
   {
     return targethost(s.c_str());
 
@@ -2072,7 +2072,7 @@ public:
   \param d Message id to assign to the message
   \return id
   */
-  const uint16_t id(const uint16_t d)
+  uint16_t id(const uint16_t d)
   {
     ((opaque_header*)header)->Id = d;
     return  ((opaque_header*)header)->Id;
@@ -2083,7 +2083,7 @@ public:
 
   \return id
   */
-  const uint16_t id() const
+  uint16_t id() const
   {
     return  ((opaque_header*)header)->Id;
   }
@@ -2094,7 +2094,7 @@ public:
   \param e Query action to assign to the message.
   \return query action
   */
-  const action_t action(const action_t e)
+  action_t action(const action_t e)
   {
     (e == query) ?
       ((opaque_header*)header)->bit_fields &= ~0x8000 :
@@ -2108,7 +2108,7 @@ public:
 
   \return query action
   */
-  const action_t action() const
+  action_t action() const
   {
     return (action_t)(((opaque_header*)header)->bit_fields & 0x8000);
   }
@@ -2120,7 +2120,7 @@ public:
   \param oc Opcode to assign to the message.
   \return Opcode
   */
-  const opcode_t  opcode(const opcode_t oc)
+  opcode_t  opcode(const opcode_t oc)
   {
     switch( oc )
     {
@@ -2150,7 +2150,7 @@ public:
 
   \return Opcode
   */
-  const opcode_t  opcode() const
+  opcode_t  opcode() const
   {
     if( ((opaque_header*)header)->bit_fields & 0x1000 )
       return iquery;
@@ -2167,7 +2167,7 @@ public:
 
   \param authority True if the server answering is the authority
   */
-	void  authority(const bool authority)
+  void  authority(const bool authority)
   {
     (authority) ? ((opaque_header*)header)->bit_fields |= 0x400 :
                   ((opaque_header*)header)->bit_fields &= ~0x400;
@@ -2178,7 +2178,7 @@ public:
 
   \return True if the server answering is the authority
   */
-  const bool is_authority() const
+  bool is_authority() const
   {
     return( ((opaque_header*)header)->bit_fields & 0x400 );
   }
@@ -2202,7 +2202,7 @@ public:
 
   \return True if the server is truncating the message
   */
-  const bool is_truncated() const  { return( ((opaque_header*)header)->bit_fields & 0x200 ); }
+  bool is_truncated() const  { return( ((opaque_header*)header)->bit_fields & 0x200 ); }
 
   /*!
   Sets the 'recursive' field.
@@ -2224,7 +2224,7 @@ public:
 
   \return True if the server can recursively seek an answer.
   */
-  const bool is_recursive() const  { return( ((opaque_header*)header)->bit_fields & 0x100 ); }
+  bool is_recursive() const  { return( ((opaque_header*)header)->bit_fields & 0x100 ); }
 
   /*!
   Sets the 'recursion availability' field.
@@ -2246,7 +2246,7 @@ public:
 
   \return True if the server can recursively seek an answer.
   */
-  const bool is_recursion_avail() const
+  bool is_recursion_avail() const
   {
     return( ((opaque_header*)header)->bit_fields & 0x80 );
   }
@@ -2257,7 +2257,7 @@ public:
   \param r Result code to assign to the message
   \return Result code
   */
-  const result_t result(const result_t r)
+  result_t result(const result_t r)
   {
     switch( r )
     {
@@ -2296,7 +2296,7 @@ public:
 
   \return Result code
   */
-  const result_t result() const
+  result_t result() const
   {
 	  if( ((opaque_header*)header)->bit_fields & 0x01 )
 		  return format_error;

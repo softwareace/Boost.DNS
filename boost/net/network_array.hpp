@@ -19,7 +19,7 @@
 
 #include <boost/iterator.hpp>
 #include <boost/cstdint.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <boost/scoped_array.hpp>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
@@ -31,7 +31,7 @@ namespace boost {
   namespace net {
 
 /**
-  The network_array class template provides a static size array of bytes 
+  The network_array class template provides a static size array of bytes
   that has accessors function to make getting and setting data network friendly.
 
   Uses the Endian/Non-Endian transform functions, (i.e. htons,ntohs)
@@ -49,7 +49,7 @@ private:
   size_t  nal; // acronym: network array length
 
 public:
-  /// Constructs an empty network_array 
+  /// Constructs an empty network_array
   /*
 
   */
@@ -63,10 +63,10 @@ public:
   @param p Sets the current caret position in the array. If left blank, it does not change the position, but only reports the position.
   @return The current caret position in the array
   */
-  const size_t  position(const size_t p=N+1)
+  size_t  position(const size_t p=N+1)
   {
     if( p != N + 1 )  nap = p;
-    return nap; 
+    return nap;
   }
 
   /// Get & Set the length of data in the array
@@ -75,11 +75,11 @@ public:
   @param l Sets the data length in the array. If left blank, it does not change the length, but only reports the length.
   @return The current length of the array
   */
-  const size_t  length(const size_t l=N+1)
+  size_t  length(const size_t l=N+1)
   {
     if( l != N + 1 )  nal = l;
-    return nal; 
-  }    
+    return nal;
+  }
 
   /// Gets data from the array
   /**
@@ -91,7 +91,7 @@ public:
   */
   size_t get(char & d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -113,7 +113,7 @@ public:
    */
   size_t put(const char d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -140,7 +140,7 @@ public:
    */
   size_t get(uint8_t & d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -162,7 +162,7 @@ public:
   */
   size_t put(const uint8_t d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -190,7 +190,7 @@ public:
    */
   size_t get(uint16_t & d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -212,7 +212,7 @@ public:
    */
   size_t put(const uint16_t d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -240,7 +240,7 @@ public:
    */
   size_t get(uint32_t & d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -262,7 +262,7 @@ public:
    */
   size_t put(const uint32_t d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -290,7 +290,7 @@ public:
    */
   size_t get(ip::address_v4 & d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -312,7 +312,7 @@ public:
    */
   size_t put(const ip::address_v4 & d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -340,7 +340,7 @@ public:
    */
   size_t get(ip::address_v6 & d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -351,7 +351,7 @@ public:
     d = ip::address_v6(bytes);
     if( incpos )
     {
-      nap += 16; 
+      nap += 16;
       if( nap > nal ) nal += 16;
     }
     return 16;
@@ -367,7 +367,7 @@ public:
    */
   size_t put(const ip::address_v6 & d, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
@@ -396,13 +396,13 @@ public:
    */
   size_t get(string & d, const size_t len, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);
     }
 
-    scoped_ptr<char> cPtr( new char[len + 1] );
+    scoped_array<char> cPtr( new char[len + 1] );
     strncpy( cPtr.get(), (char*)&array<uint8_t,N>::elems[nap], len);
     cPtr.get()[len] = 0x00;
     d = cPtr.get();
@@ -428,7 +428,7 @@ public:
    */
   size_t put(const string & d, const size_t len, const size_t p=N+1, const bool incpos=true)
   {
-    if( p != N+1 ) 
+    if( p != N+1 )
     {
       array<uint8_t,N>::rangecheck(p);
       position(p);

@@ -112,8 +112,8 @@ public:
   static void dump_a(ostream& strm, dns::resource_base_t* Ptr)
   {
 	  strm
-	    	<< ((dns::a_resource*)Ptr)->domain() << "\t" 
-			  << ((dns::a_resource*)Ptr)->ttl() << "\t" 
+	    	<< ((dns::a_resource*)Ptr)->domain() << "\t"
+			  << ((dns::a_resource*)Ptr)->ttl() << "\t"
 			  << get_class_string(((dns::a_resource*)Ptr)->rclass()) << "\t"
 			  << get_type_string(((dns::a_resource*)Ptr)->rtype()) << "\t"
 			  << ((dns::a_resource*)Ptr)->address().to_string() << endl;
@@ -123,14 +123,14 @@ public:
   {
     try
     {
-    	strm	
-	      << ((dns::a6_resource*)Ptr)->domain() << "\t" 
-			  << ((dns::a6_resource*)Ptr)->ttl() << "\t" 
+    	strm
+	      << ((dns::a6_resource*)Ptr)->domain() << "\t"
+			  << ((dns::a6_resource*)Ptr)->ttl() << "\t"
 			  << get_class_string(((dns::a6_resource*)Ptr)->rclass()) << "\t"
 			  << get_type_string(((dns::a6_resource*)Ptr)->rtype()) << "\t"
 			  << ((dns::a6_resource*)Ptr)->address().to_string() << endl;
     }
-    catch(boost::system::error_code ec)
+    catch(boost::system::error_code& ec)
     {
       strm << ec.message() << endl;
     }
@@ -139,8 +139,8 @@ public:
   static void dump_ns(ostream& strm, dns::resource_base_t* Ptr)
   {
 	  strm
-	      << ((dns::ns_resource*)Ptr)->domain() << "\t" 
-			  << ((dns::ns_resource*)Ptr)->ttl() << "\t" 
+	      << ((dns::ns_resource*)Ptr)->domain() << "\t"
+			  << ((dns::ns_resource*)Ptr)->ttl() << "\t"
 			  << get_class_string(((dns::ns_resource*)Ptr)->rclass()) << "\t"
 			  << get_type_string(((dns::ns_resource*)Ptr)->rtype()) << "\t"
 			  << ((dns::ns_resource*)Ptr)->nameserver() << endl;
@@ -149,20 +149,20 @@ public:
   static void dump_mx(ostream& strm, dns::resource_base_t* Ptr)
   {
 	  strm
-		  << ((dns::mx_resource*)Ptr)->domain() << "\t" 
-		  << ((dns::mx_resource*)Ptr)->ttl() << "\t" 
+		  << ((dns::mx_resource*)Ptr)->domain() << "\t"
+		  << ((dns::mx_resource*)Ptr)->ttl() << "\t"
 		  << get_class_string(((dns::mx_resource*)Ptr)->rclass()) << "\t"
 		  << get_type_string(((dns::mx_resource*)Ptr)->rtype()) << "\t"
-		  << ((dns::mx_resource*)Ptr)->preference() << "\t" 
+		  << ((dns::mx_resource*)Ptr)->preference() << "\t"
 		  << ((dns::mx_resource*)Ptr)->exchange() << endl;
   }
 
   static void dump_soa(ostream& strm, dns::resource_base_t* Ptr)
   {
 	  strm
-      << ((dns::soa_resource*)Ptr)->domain() << "\t" 
-      << ((dns::soa_resource*)Ptr)->ttl() << "\t" 
-      << "SOA\t" 
+      << ((dns::soa_resource*)Ptr)->domain() << "\t"
+      << ((dns::soa_resource*)Ptr)->ttl() << "\t"
+      << "SOA\t"
       << get_class_string(((dns::soa_resource*)Ptr)->rclass()) << "\t"
       << get_type_string(((dns::soa_resource*)Ptr)->rtype()) << "\t"
       << ((dns::soa_resource*)Ptr)->master_name() << "\t"
@@ -177,8 +177,8 @@ public:
   static void dump_cname(ostream& strm, dns::resource_base_t* Ptr)
   {
     strm
-		  << ((dns::cname_resource*)Ptr)->domain() << "\t" 
-		  << ((dns::cname_resource*)Ptr)->ttl() << "\t" 
+		  << ((dns::cname_resource*)Ptr)->domain() << "\t"
+		  << ((dns::cname_resource*)Ptr)->ttl() << "\t"
 		  << get_class_string(((dns::cname_resource*)Ptr)->rclass()) << "\t"
 		  << get_type_string(((dns::cname_resource*)Ptr)->rtype()) << "\t"
 		  << ((dns::cname_resource*)Ptr)->canonicalname() << endl;
@@ -187,8 +187,8 @@ public:
   static void dump_hinfo(ostream& strm, dns::resource_base_t* Ptr)
   {
 	  strm
-		  << ((dns::hinfo_resource*)Ptr)->domain() << "\t" 
-		  << ((dns::hinfo_resource*)Ptr)->ttl() << "\t" 
+		  << ((dns::hinfo_resource*)Ptr)->domain() << "\t"
+		  << ((dns::hinfo_resource*)Ptr)->ttl() << "\t"
 		  << get_class_string(((dns::hinfo_resource*)Ptr)->rclass()) << "\t"
 		  << get_type_string(((dns::hinfo_resource*)Ptr)->rtype()) << "\t"
 		  << ((dns::hinfo_resource*)Ptr)->cpu() << "\t"
@@ -198,8 +198,8 @@ public:
   static void dump_text(ostream& strm, dns::resource_base_t* Ptr)
   {
 	  strm
-		  << ((dns::txt_resource*)Ptr)->domain() << "\t" 
-		  << ((dns::txt_resource*)Ptr)->ttl() << "\t" 
+		  << ((dns::txt_resource*)Ptr)->domain() << "\t"
+		  << ((dns::txt_resource*)Ptr)->ttl() << "\t"
 		  << get_class_string(((dns::txt_resource*)Ptr)->rclass()) << "\t"
 		  << get_type_string(((dns::txt_resource*)Ptr)->rtype()) << "\t"
 		  << ((dns::txt_resource*)Ptr)->text() << endl;
@@ -208,8 +208,8 @@ public:
   static void dump_ptr(ostream& strm, dns::resource_base_t* Ptr)
   {
 	  strm
-		  << ((dns::ptr_resource*)Ptr)->domain() << "\t" 
-		  << ((dns::ptr_resource*)Ptr)->ttl() << "\t" 
+		  << ((dns::ptr_resource*)Ptr)->domain() << "\t"
+		  << ((dns::ptr_resource*)Ptr)->ttl() << "\t"
 		  << get_class_string(((dns::ptr_resource*)Ptr)->rclass()) << "\t"
 		  << get_type_string(((dns::ptr_resource*)Ptr)->rtype()) << "\t"
 		  << ((dns::ptr_resource*)Ptr)->pointer() << endl;
@@ -218,8 +218,8 @@ public:
   static void dump_srv(ostream& strm, dns::resource_base_t* Ptr)
   {
 	  strm
-		  << ((dns::srv_resource*)Ptr)->domain() << "\t" 
-		  << ((dns::srv_resource*)Ptr)->ttl() << "\t" 
+		  << ((dns::srv_resource*)Ptr)->domain() << "\t"
+		  << ((dns::srv_resource*)Ptr)->ttl() << "\t"
 		  << get_class_string(((dns::srv_resource*)Ptr)->rclass()) << "\t"
 		  << get_type_string(((dns::srv_resource*)Ptr)->rtype()) << "\t"
 		  << ((dns::srv_resource*)Ptr)->priority() << "\t"
