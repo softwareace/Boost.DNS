@@ -8,6 +8,7 @@
 #
 
 using quickbook ;
+using doxygen ; 
 
 HPP_DOCUMENTS = rfc1035_414 network_array dns dns_debug 
                 basic_dns_resolver

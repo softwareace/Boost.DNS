@@ -1,12 +1,15 @@
-//
-// rfc1035_414.hpp
-// ~~~~~~~~~~~~~~~
-//
-// Copyright (c) 1998-2006 Andreas Haberstroh (andreas at ibusy dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
+/*
+ rfc1035_414.hpp
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Copyright (c) 2008 - 2012 Andreas Haberstroh
+ (andreas at ibusy dot com)
+ (softwareace01 at google dot com)
+ (softwareace at yahoo dot com)
+
+ Distributed under the Boost Software License, Version 1.0. (See accompanying
+ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+ */
 
 #ifndef BOOST_NET_RFC1035_414_HPP
 #define BOOST_NET_RFC1035_414_HPP
@@ -22,110 +25,115 @@
 #include <boost/cstdint.hpp>
 #include <boost/net/network_array.hpp>
 
-
 using namespace std;
 using namespace boost;
 
-namespace boost {
-  namespace net {
+namespace boost
+{
+  namespace net
+  {
 
-    typedef network_array<576> dns_buffer_t;
+    typedef network_array< 576 > dns_buffer_t;
 
     /*!
-      The rfc1035_414_t class is a helper class for dealing with DNS label compression inside
-      of DNS type packets. This class takes its name after RFC1035, section 4.1.4.
-    */
+     The rfc1035_414_t class is a helper class for dealing with DNS label compression inside
+     of DNS type packets. This class takes its name after RFC1035, section 4.1.4.
+     */
     class rfc1035_414_t
     {
     private:
       /*!
-      The domain_offset_map_t links buffer offsets to strings for the DNS label compression
-      requirements.
-      */
-      typedef std::map<string,size_t>   domain_offset_map_t;
+       The domain_offset_map_t links buffer offsets to strings for the DNS label compression
+       requirements.
+       */
+      typedef std::map< string, size_t > domain_offset_map_t;
 
       domain_offset_map_t _offsets;
 
     public:
       /// Default constructor
-      rfc1035_414_t() : _offsets()
+      rfc1035_414_t () :
+        _offsets()
       {
       }
 
       /// Copy constructor
-      rfc1035_414_t(const rfc1035_414_t& rfc)
-        : _offsets(rfc._offsets)
+      rfc1035_414_t ( const rfc1035_414_t& rfc ) :
+        _offsets(rfc._offsets)
       {
       }
 
       /// Assignment operator
-      rfc1035_414_t& operator=(const rfc1035_414_t& rfc)
+      rfc1035_414_t&
+      operator= ( const rfc1035_414_t& rfc )
       {
         _offsets = rfc._offsets;
         return *this;
       }
 
       /*!
-      Breaks apart a domain name into it's label or compressed offset values and
-      writes it to the buffer
+       Breaks apart a domain name into it's label or compressed offset values and
+       writes it to the buffer
 
-      \param domain Domain string to break apart into labels
-      \param buffer Memory buffer to write the labels to
+       \param domain Domain string to break apart into labels
+       \param buffer Memory buffer to write the labels to
 
-      \returns Number of bytes written
-      */
-      size_t write_label(const string& domain, dns_buffer_t & buffer)
+       \returns Number of bytes written
+       */
+      size_t
+      write_label ( const string& domain, dns_buffer_t & buffer )
       {
         // no length? no service
         if( !domain.length() )
           return 0;
 
-        string  lowerDomain = to_lower_copy(domain);
+        string lowerDomain = to_lower_copy(domain);
         // total length of the data written.
-        size_t  length(0);
+        size_t length(0);
 
         // place to begin the substring at
         string::size_type begin(0);
 
-        bool  done = false;
+        bool done = false;
         while( !done )
         {
           // find the next '.' and cut the subdomain string from it.
           string::size_type current = lowerDomain.find('.', begin);
-          string  subdomain( lowerDomain.substr(begin) );
+          string subdomain(lowerDomain.substr(begin));
 
           // get the length of this label
-          uint8_t l( (uint8_t)(current - begin) );
+          uint8_t l( ( uint8_t )(current - begin));
           if( current == string::npos )
           {
-            l = (uint8_t)subdomain.length();
+            l = (uint8_t) subdomain.length();
             done = true;
           }
 
           // some how we've read a blank label!
-          if( !l ) break;
+          if( !l )
+            break;
 
           // current domain label
-          string  label( lowerDomain.substr(begin, l) );
+          string label(lowerDomain.substr(begin, l));
 
           // deja vous?
-          domain_offset_map_t::iterator iter = _offsets.find( subdomain );
+          domain_offset_map_t::iterator iter = _offsets.find(subdomain);
           if( iter == _offsets.end() )
           {
             // save the position in the buffer
-            _offsets[ subdomain ] = buffer.position();
+            _offsets[subdomain] = buffer.position();
 
-            buffer.put( (uint8_t)label.length() );
-            buffer.put( label, label.length() );
+            buffer.put((uint8_t) label.length());
+            buffer.put(label, label.length());
             length += sizeof(uint8_t) + label.length();
             begin = current + 1;
           }
           else
           {
             // compresses reference
-            size_t  offset = (0xC000 | iter->second);
-            buffer.put( (uint8_t)(offset >> 8) );
-            buffer.put( (uint8_t)(offset) );
+            size_t offset = ( 0xC000 | iter->second );
+            buffer.put( ( uint8_t )(offset >> 8));
+            buffer.put( ( uint8_t )(offset));
 
             // every byte counts
             length += sizeof(uint16_t);
@@ -134,28 +142,29 @@ namespace boost {
         }
 
         // need a zero termination to identify the "last" label
-        buffer.put( (uint8_t)0x00 );
+        buffer.put((uint8_t) 0x00);
         length += sizeof(uint8_t);
 
         return length;
       }
 
       /*!
-      Reads a sequence of labels from a memory buffer
+       Reads a sequence of labels from a memory buffer
 
-      This function is recursive in it's decompress. One of the things to be aware
-      of are DNS packets that make circular offset references. Also, malformed packets
-      that reference "bad" areas of the packet are no-no's
+       This function is recursive in it's decompress. One of the things to be aware
+       of are DNS packets that make circular offset references. Also, malformed packets
+       that reference "bad" areas of the packet are no-no's
 
-      \param domain Domain label to return
-      \param buffer Memory buffer to read the domain from
-      \throws std::out_of_range
-      */
-      void read_label(string& domain, dns_buffer_t & buffer)
+       \param domain Domain label to return
+       \param buffer Memory buffer to read the domain from
+       \throws std::out_of_range
+       */
+      void
+      read_label ( string& domain, dns_buffer_t & buffer )
       {
         while( true )
         {
-          uint8_t   len;
+          uint8_t len;
 
           size_t thisPos = buffer.position();
           buffer.get(len);
@@ -166,7 +175,7 @@ namespace boost {
             uint8_t msb;
             buffer.get(msb);
             uint8_t lsb = len ^ 0xC0;
-            uint16_t offset = static_cast<uint16_t>(lsb << 8 | msb);
+            uint16_t offset = static_cast< uint16_t > (lsb << 8 | msb);
 
             // bad dog! trying to reference the header
             if( offset < 0x0C )
@@ -197,7 +206,7 @@ namespace boost {
           else if( len )
           {
             string s;
-            buffer.get( s, len );
+            buffer.get(s, len);
 
             domain += to_lower_copy(s) + ".";
           }
@@ -206,7 +215,8 @@ namespace boost {
         }
 
         // we should always carry the "." in the name
-        if( !domain.length() ) domain = ".";
+        if( !domain.length() )
+          domain = ".";
       }
     };
 
